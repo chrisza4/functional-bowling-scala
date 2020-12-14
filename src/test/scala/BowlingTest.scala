@@ -12,6 +12,11 @@ class BowlingScoreTest extends org.scalatest.funsuite.AnyFunSuite {
     assertResult(Some(15))(Bowling.getFrameScore(frame, Some(nextFrame)))
   }
 
+  test("Spare frame without consequtive frame") {
+    val frame = NormalFrame(3, Some(7))
+    assertResult(None)(Bowling.getFrameScore(frame, None))
+  }
+
   test("Strike Frame") {
     val frame = NormalFrame(10, None)
     val nextFrame = NormalFrame(5, Some(2))
@@ -19,6 +24,22 @@ class BowlingScoreTest extends org.scalatest.funsuite.AnyFunSuite {
 
     assertResult(Some(17))(
       Bowling.getFrameScore(frame, Some(nextFrame), Some(nextNextFrame))
+    )
+  }
+
+  test("Strike Frame without consequtive frames") {
+    val frame = NormalFrame(10, None)
+
+    assertResult(None)(
+      Bowling.getFrameScore(frame, None, None)
+    )
+  }
+
+  test("Strike Frame with strike frame but no consequtive frame") {
+    val frame = NormalFrame(10, None)
+
+    assertResult(None)(
+      Bowling.getFrameScore(frame, Some(frame), None)
     )
   }
 

@@ -30,16 +30,28 @@ object Bowling {
       case LastFrame(first, second, third) =>
         Some(first + second.getOrElse(0) + third.getOrElse(0))
       case ScoreFrame(first, second) => Some(first + second)
-      case SpareFrame(first, second) => Some(first + second + nextRolls(0))
-      case StrikeFrame()             => Some(10 + nextRolls(0) + nextRolls(1))
+      case SpareFrame(first, second) => {
+        if (nextRolls.length < 1) {
+          // Unfinished, need to roll more
+          return None
+        }
+        Some(first + second + nextRolls(0))
+      }
+      case StrikeFrame() => {
+        if (nextRolls.length < 2) {
+          // Unfinished, need to roll more
+          return None
+        }
+        Some(10 + nextRolls(0) + nextRolls(1))
+      }
     }
   }
 
   def getGameScore(game: Array[Frame]): Int = {
     game.zipWithIndex.map {
       case (frame, index) => {
-        val nextFrame = getArrayOrNone(game, index + 1)
-        val nextNextFrame = getArrayOrNone(game, index + 2)
+        val nextFrame = getItemAtIndexIfExists(game, index + 1)
+        val nextNextFrame = getItemAtIndexIfExists(game, index + 2)
         getFrameScore(frame, nextFrame, nextNextFrame) match {
           case None        => 0
           case Some(score) => score
@@ -92,7 +104,10 @@ object Bowling {
     firstFrameRolls.concat(secondFrameRolls)
   }
 
-  private def getArrayOrNone[T](arr: Array[T], index: Int): Option[T] = {
+  private def getItemAtIndexIfExists[T](
+      arr: Array[T],
+      index: Int
+  ): Option[T] = {
     try {
       Some(arr(index))
     } catch {
