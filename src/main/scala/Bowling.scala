@@ -58,8 +58,10 @@ object Bowling {
     frame.second match {
       case None => UnfinishedFrame()
       case Some(second) =>
-        if (frame.first + second == 10) SpareFrame(frame.first, second)
-        else ScoreFrame(frame.first, second)
+        if (frame.first + second == 10) {
+          return SpareFrame(frame.first, second)
+        }
+        ScoreFrame(frame.first, second)
     }
   }
 
